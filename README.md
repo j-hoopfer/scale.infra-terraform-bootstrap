@@ -21,7 +21,7 @@ mycompany.infra-terraform-bootstrap/
    └── prod/
 ```
 
-## Why terraform.tfvars Files Are Committed
+## Why terraform.tfvars Files Are Committed 
 
 **This repository intentionally commits `terraform.tfvars` since it contain no secrets**
 
