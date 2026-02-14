@@ -1,0 +1,63 @@
+name: Terraform Validation
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "modules/**/*.tf"
+      - "accounts/**/*.tf"
+      - ".github/workflows/validate.yml"
+  push:
+    branches: [main]
+    paths:
+      - "modules/**/*.tf"
+      - "accounts/**/*.tf"
+
+jobs:
+  terraform-fmt:
+    name: Terraform Format Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.7.4
+
+      - name: Terraform Format Check
+        run: |
+          echo "Checking Terraform formatting..."
+          terraform fmt -check -recursive
+
+      - name: Format Check Failed - Suggest Fix
+        if: failure()
+        run: |
+          echo "❌ Terraform formatting issues detected!"
+          echo "Run locally to fix: terraform fmt -recursive"
+
+  terraform-validate:
+    name: Terraform Validate
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        account: [dev]
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.7.4
+
+      - name: Terraform Init (No Backend)
+        working-directory: accounts/${{ matrix.account }}
+        run: |
+          # Initialize without backend configuration (validation only)
+          terraform init -backend=false
+
+      - name: Terraform Validate
+        working-directory: accounts/${{ matrix.account }}
+        run: terraform validate
