@@ -5,7 +5,7 @@ on:
     branches: [main]
 
 jobs:
-  terraform-fmt:
+  fmt:
     name: Terraform Format Check
     runs-on: ubuntu-latest
     steps:
@@ -28,7 +28,7 @@ jobs:
           echo "❌ Terraform formatting issues detected!"
           echo "Run locally to fix: terraform fmt -recursive"
 
-  terraform-validate:
+  validate:
     name: Terraform Validate
     runs-on: ubuntu-latest
     strategy:

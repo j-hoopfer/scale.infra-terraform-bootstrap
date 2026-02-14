@@ -3,6 +3,9 @@ name: Terraform Security
 on:
   pull_request:
     branches: [main]
+  schedule:
+    - cron: "0 9 * * *" # Daily at 9 AM UTC
+  workflow_dispatch: # Allow manual trigger
 
 jobs:
   security:
