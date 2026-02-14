@@ -1,0 +1,35 @@
+name: Terraform Security
+
+on:
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: "0 9 * * *" # Daily at 9 AM UTC
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  security:
+    name: Security Scan (tfsec)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Run tfsec
+        uses: aquasecurity/tfsec-action@v1.0.3
+        with:
+          soft_fail: false
+          format: default
+          additional_args: --minimum-severity MEDIUM
+
+      - name: Security Scan Failed
+        if: failure()
+        run: |
+          echo "❌ Security issues detected!"
+          echo "Review tfsec output above and fix issues"
+          echo "Common issues:"
+          echo "  - S3 bucket without encryption"
+          echo "  - S3 bucket without versioning"
+          echo "  - DynamoDB table without encryption"
+          echo "  - Missing tags"
+          echo "Run locally: tfsec ."

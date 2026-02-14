@@ -1,0 +1,35 @@
+name: Terraform Linting
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    name: TFLint Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup TFLint
+        uses: terraform-linters/setup-tflint@v4
+        with:
+          tflint_version: latest
+
+      - name: Init TFLint
+        run: tflint --init
+
+      - name: Run TFLint
+        run: tflint --recursive --format=compact --minimum-failure-severity=error
+
+      - name: TFLint Failed
+        if: failure()
+        run: |
+          echo "❌ TFLint issues detected!"
+          echo "Run locally: tflint --recursive"
+          echo "Common issues:"
+          echo "  - Deprecated syntax"
+          echo "  - Invalid resource references"
+          echo "  - AWS-specific misconfigurations"
+          echo "  - Naming convention violations"
