@@ -21,6 +21,15 @@ mycompany.infra-terraform-bootstrap/
 └── prod/
 ```
 
+## Why terraform.tfvars Files Are Committed
+
+**This repository intentionally commits `terraform.tfvars` since it contain no secrets**
+
+- ✅ AWS Account IDs (not secret - visible in AWS Console)
+- ✅ Environment names (dev, prod)
+- ✅ Region names (us-east-1)
+- ✅ Company name prefix
+
 ## Modules
 
 ### Terraform State Backend (`modules/terraform-state-backend`)

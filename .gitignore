@@ -5,11 +5,10 @@
 
 # Terraform directories
 .terraform/
-.terraform.lock.hcl
 
-# Variable files (contain account IDs)
-*.tfvars
-!*.tfvars.example
+# .terraform.lock.hcl is intentionally NOT ignored
+# intentionally NOT ignored for this bootstrap project. See README for explanation
+!*.tfvars  
 
 # Logs
 *.log
