@@ -2,18 +2,6 @@
 
 **Purpose:** One-time setup to create Terraform state infrastructure (S3 + DynamoDB) for Dev and Prod AWS accounts.
 
-**Documentation:** See the [terraform-bootstrap-plan](../ec2-to-fargate-migration-docs/terraform-bootstrap-plan/) directory for complete setup instructions.
-
-## Quick Start
-
-If you're following the bootstrap plan, you're in the right place! This repository was created in:
-
-- **Phase 1:** Repository Setup
-- **Phase 2:** Terraform Module Creation
-- **Phase 3:** Dev Account Bootstrap
-- **Phase 4:** CI/CD Setup (validates code quality and security)
-- **Phase 5:** Prod Account Bootstrap
-
 ## Overview
 
 This repository solves the "chicken and egg" problem:
@@ -26,10 +14,12 @@ After bootstrap, all other infrastructure projects use the remote S3 backend.
 ## Repository Structure
 
 ```
-mycompany.infra-terraform-bootstrap/
+scale.infra-terraform-bootstrap/
 ├── .github/
 │   └── workflows/
-│       └── validate.yml          # CI/CD for code quality & security
+│       ├── validate.yml          # Terraform fmt/validate + docs
+│       ├── security.yml          # tfsec security scanning
+│       └── lint.yml              # tflint code quality
 ├── modules/
 │   └── terraform-state-backend/  # Reusable module
 │       ├── s3.tf                 # S3 bucket for state storage
@@ -54,10 +44,20 @@ mycompany.infra-terraform-bootstrap/
 
 ## AWS Accounts
 
-| Environment | Account ID     | S3 Bucket                      | Region    |
-| ----------- | -------------- | ------------------------------ | --------- |
-| Dev         | (your-dev-id)  | mycompany-terraform-state-dev  | us-east-1 |
-| Prod        | (your-prod-id) | mycompany-terraform-state-prod | us-east-1 |
+| Environment | Account ID | S3 Bucket                  | DynamoDB Table       | Region    | Status                                          |
+| ----------- | ---------- | -------------------------- | -------------------- | --------- | ----------------------------------------------- |
+| Dev         | TBD        | scale-terraform-state-dev  | terraform-locks-dev  | us-east-1 | ✅ Live Bootstrap complete, CI workflows active |
+| Prod        | TBD        | scale-terraform-state-prod | terraform-locks-prod | us-east-1 | 🚧 Pending                                      |
+
+## CI/CD Workflows
+
+This repository uses separate workflow files for different concerns:
+
+- **[validate.yml](.github/workflows/validate.yml)** - Terraform format, syntax validation, and documentation checks
+- **[security.yml](.github/workflows/security.yml)** - tfsec security scanning (runs on PRs and nightly)
+- **[lint.yml](.github/workflows/lint.yml)** - tflint code quality checks
+
+All workflows run on pull requests to validate changes before merge.
 
 ## Why terraform.tfvars Files Are Committed
 
@@ -98,13 +98,13 @@ Creates S3 bucket and DynamoDB table for Terraform remote state storage.
 module "terraform_backend" {
   source = "../../modules/terraform-state-backend"
 
-  bucket_name     = "mycompany-terraform-state-dev"
-  lock_table_name = "mycompany-terraform-locks"
+  bucket_name     = "scale-terraform-state-dev"
+  lock_table_name = "terraform-locks-dev"
   environment     = "dev"
 
   common_tags = {
     ManagedBy  = "Terraform"
-    Repository = "mycompany.infra-terraform-bootstrap"
+    Repository = "scale.infra-terraform-bootstrap"
   }
 }
 ```
