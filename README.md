@@ -13,11 +13,13 @@ After bootstrap, all other infrastructure projects use the remote S3 backend.
 
 ## Repository Structure
 
+```
 mycompany.infra-terraform-bootstrap/
 ├── modules/terraform-state-backend/ # Reusable module
 └── accounts/ # Account-specific configs
 ├── dev/
 └── prod/
+```
 
 ## Modules
 
