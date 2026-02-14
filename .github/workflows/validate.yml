@@ -9,9 +9,6 @@ on:
       - ".github/workflows/validate.yml"
   push:
     branches: [main]
-    paths:
-      - "modules/**/*.tf"
-      - "accounts/**/*.tf"
 
 jobs:
   terraform-fmt:
